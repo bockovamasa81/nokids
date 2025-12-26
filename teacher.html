@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<title>N.O.K.I.D.S — Панель учителя</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --primary:#7E8CFF;
+  --bg:#F5F5F5;
+  --accent:#E0E7FF;
+  --text:#222;
+}
+
+body{
+  margin:0;
+  font-family:'Inter',sans-serif;
+  background:var(--bg);
+}
+
+.header{
+  background:var(--primary);
+  color:white;
+  padding:14px 24px;
+  font-size:18px;
+  font-weight:600;
+}
+
+.container{
+  max-width:1100px;
+  margin:24px auto;
+  background:white;
+  border-radius:16px;
+  padding:20px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.1);
+}
+
+section{
+  margin-bottom:28px;
+}
+
+input, select{
+  padding:8px 10px;
+  border-radius:10px;
+  border:1px solid #ccc;
+  margin-right:8px;
+}
+
+button{
+  background:var(--primary);
+  color:white;
+  border:none;
+  border-radius:999px;
+  padding:8px 14px;
+  cursor:pointer;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:10px;
+}
+
+th, td{
+  padding:10px;
+  border-bottom:1px solid #eee;
+  text-align:center;
+}
+
+th{
+  background:#E0E7FF;
+}
+
+td:first-child{
+  text-align:left;
+}
+
+.delete{
+  color:#c0392b;
+  cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+  Панель учителя — управление прогрессом
+</div>
+
+<div class="container">
+
+<!---------------- УЧЕНИКИ ---------------->
+<section>
+  <h3>Ученики</h3>
+
+  <input id="newName" placeholder="Имя ученика">
+  <input id="newPass" placeholder="Пароль">
+  <button onclick="addStudent()">Добавить ученика</button>
+
+  <table id="studentTable"></table>
+</section>
+
+
+<!---------------- ОБРАТНАЯ СВЯЗЬ ---------------->
+<section>
+  <h3>Обратная связь (PDF-файлы)</h3>
+
+  <select id="fbStudentSelect"></select>
+
+  <table id="fbTable"></table>
+</section>
+
+
+<!---------------- БАЛЛЫ ---------------->
+<section>
+  <h3>Выставление баллов</h3>
+
+  <select id="studentSelect"></select>
+
+  <table id="scoreTable"></table>
+
+  <button onclick="saveScores()">Сохранить баллы</button>
+</section>
+
+</div>
+
+
+
+<script>
+/* ---------- ХРАНИЛИЩЕ ---------- */
+
+if(!localStorage.studentUsers){
+  localStorage.studentUsers = JSON.stringify([]);
+}
+
+if(!localStorage.studentScores){
+  localStorage.studentScores = JSON.stringify([]);
+}
+
+if(!localStorage.feedbackFiles){
+  localStorage.feedbackFiles = JSON.stringify([]);
+}
+
+let users = JSON.parse(localStorage.studentUsers);
+let scores = JSON.parse(localStorage.studentScores);
+let feedback = JSON.parse(localStorage.feedbackFiles);
+
+
+/* ---------- УЧЕНИКИ ---------- */
+
+function renderStudents(){
+
+  let html = `
+  <tr>
+    <th>Имя</th>
+    <th>Пароль</th>
+    <th></th>
+  </tr>`;
+
+  users.forEach((u,i)=>{
+    html+=`
+    <tr>
+      <td>${u.name}</td>
+      <td>${u.password}</td>
+      <td>
+        <span class="delete" onclick="removeStudent(${i})">удалить</span>
+      </td>
+    </tr>`;
+  });
+
+  studentTable.innerHTML = html;
+
+  studentSelect.innerHTML =
+    users.map(u=>`<option>${u.name}</option>`).join("");
+
+  fbStudentSelect.innerHTML =
+    users.map(u=>`<option>${u.name}</option>`).join("");
+}
+
+function addStudent(){
+
+  let name=newName.value.trim();
+  let pass=newPass.value.trim();
+
+  if(!name || !pass) return alert("Введите имя и пароль");
+
+  users.push({name, password:pass});
+  localStorage.studentUsers=JSON.stringify(users);
+
+  scores.push({name, scores:[]});
+  localStorage.studentScores=JSON.stringify(scores);
+
+  feedback.push({name, files:["","","",""]});
+  localStorage.feedbackFiles=JSON.stringify(feedback);
+
+  renderStudents();
+  renderFBTable();
+  renderScoreTable();
+}
+
+function removeStudent(index){
+
+  let name = users[index].name;
+
+  if(!confirm("Удалить ученика "+name+"?")) return;
+
+  users.splice(index,1);
+  localStorage.studentUsers=JSON.stringify(users);
+
+  scores = scores.filter(s=>s.name!==name);
+  localStorage.studentScores=JSON.stringify(scores);
+
+  feedback = feedback.filter(s=>s.name!==name);
+  localStorage.feedbackFiles=JSON.stringify(feedback);
+
+  renderStudents();
+  renderFBTable();
+  renderScoreTable();
+}
+
+
+/* ---------- ОБРАТНАЯ СВЯЗЬ ---------- */
+
+function ensureFeedbackRecord(name){
+  let item = feedback.find(s=>s.name===name);
+  if(!item){
+    item = {name, files:["","","",""]};
+    feedback.push(item);
+    localStorage.feedbackFiles = JSON.stringify(feedback);
+  }
+  return item;
+}
+
+function renderFBTable(){
+
+  let name = fbStudentSelect.value;
+  let item = ensureFeedbackRecord(name);
+
+  let html = `
+  <tr>
+    <th>Пробник</th>
+    <th>Файл PDF</th>
+    <th></th>
+  </tr>`;
+
+  for(let i=0;i<4;i++){
+
+    let label = item.files[i] ? "Загружен" : "Нет файла";
+
+    html += `
+    <tr>
+      <td>${i+1} пробник</td>
+      <td>${label}</td>
+      <td>
+        <input type="file" accept="application/pdf"
+               onchange="uploadFeedbackFile('${name}', ${i}, this)">
+      </td>
+    </tr>`;
+  }
+
+  fbTable.innerHTML = html;
+}
+
+function uploadFeedbackFile(name, index, input){
+
+  let file = input.files[0];
+  if(!file) return;
+
+  let reader = new FileReader();
+
+  reader.onload = function(e){
+
+    let base64 = e.target.result;
+
+    let item = ensureFeedbackRecord(name);
+
+    item.files[index] = base64;
+
+    localStorage.feedbackFiles = JSON.stringify(feedback);
+
+    alert("Файл прикреплён");
+
+    renderFBTable();
+  };
+
+  reader.readAsDataURL(file);
+}
+
+fbStudentSelect.addEventListener("change", renderFBTable);
+
+
+/* ---------- БАЛЛЫ ---------- */
+
+function renderScoreTable(){
+
+  let name=studentSelect.value;
+  let student=scores.find(s=>s.name===name);
+  if(!student) return;
+
+  let arr=student.scores;
+
+  let html=`
+  <tr>
+    <th>Задание</th>
+    <th>1 пробник</th>
+    <th>2 пробник</th>
+    <th>3 пробник</th>
+    <th>4 пробник</th>
+  </tr>`;
+
+  for(let i=1;i<=19;i++){
+
+    function v(n){
+      return arr[n] ?? "";
+    }
+
+    html+=`
+    <tr>
+      <td>Задание ${i}</td>
+      <td><input value="${v(i-1)}"></td>
+      <td><input value="${v(19+i-1)}"></td>
+      <td><input value="${v(38+i-1)}"></td>
+      <td><input value="${v(57+i-1)}"></td>
+    </tr>`;
+  }
+
+  scoreTable.innerHTML=html;
+}
+
+studentSelect.addEventListener("change", renderScoreTable);
+
+
+function saveScores(){
+
+  let name=studentSelect.value;
+  let student=scores.find(s=>s.name===name);
+
+  let inputs=document.querySelectorAll("#scoreTable input");
+
+  let arr = new Array(19*4).fill(0);
+
+  for(let task=0; task<19; task++){
+
+    let v1 = Number(inputs[task*4 + 0].value || 0);
+    let v2 = Number(inputs[task*4 + 1].value || 0);
+    let v3 = Number(inputs[task*4 + 2].value || 0);
+    let v4 = Number(inputs[task*4 + 3].value || 0);
+
+    arr[task]        = v1;
+    arr[19 + task]   = v2;
+    arr[38 + task]   = v3;
+    arr[57 + task]   = v4;
+  }
+
+  student.scores = arr;
+
+  localStorage.studentScores = JSON.stringify(scores);
+
+  alert("Баллы сохранены корректно");
+}
+
+
+/* ---------- ПЕРВЫЙ ЗАПУСК ---------- */
+
+renderStudents();
+renderFBTable();
+renderScoreTable();
+
+</script>
+
+</body>
+</html>

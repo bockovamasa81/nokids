@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>N.O.K.I.D.S — Мои задания</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root{
+    --primary:#7E8CFF;
+    --bg:#F5F5F5;
+    --accent1:#FFDEEF;
+    --accent2:#E0E7FF;
+    --accent3:#AFF696;
+    --text:#222222;
+}
+*{box-sizing:border-box;}
+body{
+    margin:0;
+    background:var(--bg);
+    font-family:'Inter',sans-serif;
+    color:var(--text);
+}
+
+/* HEADER */
+.header{
+    background:var(--primary);
+    color:#fff;
+    padding:14px 40px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    box-shadow:0 4px 10px rgba(0,0,0,0.15);
+}
+.header-left{
+    display:flex;
+    align-items:center;
+    gap:16px;
+}
+.logo{height:40px;}
+.brand-title{font-weight:700;font-size:18px;}
+.brand-subtitle{font-size:12px;opacity:0.9;}
+.nav{display:flex;gap:18px;font-size:14px;}
+.nav a{color:#fff;text-decoration:none;opacity:0.9;}
+.nav a.active{font-weight:600;border-bottom:2px solid #fff;padding-bottom:3px;}
+
+.main{
+    max-width:1000px;
+    margin:28px auto 40px auto;
+    padding:0 16px;
+}
+
+/* CARD */
+.card{
+    background:#fff;
+    border-radius:16px;
+    padding:22px 26px;
+    box-shadow:0 12px 26px rgba(0,0,0,0.08);
+}
+.card-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:16px;
+}
+.card-title{
+    font-size:18px;
+    font-weight:600;
+}
+.card-sub{
+    font-size:13px;
+    color:#555;
+}
+
+/* STUDENTS GRID */
+.students{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+    gap:16px;
+}
+.student-card{
+    border-radius:14px;
+    background:var(--accent2);
+    padding:14px 14px 16px 14px;
+}
+.student-name{
+    font-weight:600;
+    margin-bottom:6px;
+}
+.total{
+    font-size:13px;
+    margin-top:6px;
+}
+.total span{
+    font-weight:600;
+}
+
+/* TABLE */
+.table{
+    width:100%;
+    font-size:13px;
+}
+.table td{
+    padding:4px 3px;
+}
+input[type="number"]{
+    width:70px;
+    padding:5px 6px;
+    border-radius:8px;
+    border:1px solid #cbd0ff;
+    font-size:13px;
+}
+
+/* SAVE BUTTON */
+.actions{
+    margin-top:18px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+}
+.button{
+    background:var(--primary);
+    color:#fff;
+    border:none;
+    border-radius:999px;
+    padding:9px 18px;
+    font-size:13px;
+    cursor:pointer;
+}
+.button:active{
+    transform:translateY(1px);
+}
+.info-text{
+    font-size:12px;
+    color:#555;
+}
+
+/* TOAST */
+.toast{
+    position:fixed;
+    bottom:20px;
+    right:20px;
+    background:#222;
+    color:#fff;
+    padding:10px 16px;
+    border-radius:999px;
+    font-size:12px;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .3s;
+}
+.toast.show{
+    opacity:0.9;
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+    <div class="header-left">
+        <img src="logo.png" class="logo" alt="N.O.K.I.D.S">
+        <div>
+            <div class="brand-title">N.O.K.I.D.S</div>
+            <div class="brand-subtitle">Управление заданиями и баллами</div>
+        </div>
+    </div>
+    <nav class="nav">
+        <a href="index.html">Dashboard</a>
+        <a href="cars.html">Гонка знаний</a>
+        <a href="scores.html" class="active">Мои задания</a>
+    </nav>
+</header>
+
+<main class="main">
+    <section class="card">
+        <div class="card-header">
+            <div>
+                <div class="card-title">Баллы по заданиям</div>
+                <div class="card-sub">
+                    Изменения сохраняются локально в браузере и используются для гонки знаний и Dashboard.
+                </div>
+            </div>
+        </div>
+
+        <div class="students" id="studentsContainer"></div>
+
+        <div class="actions">
+            <button class="button" onclick="save()">Сохранить изменения</button>
+            <div class="info-text">
+                Подсказка: 0 баллов = задание ещё не выполнялось.  
+                После сохранения откройте «Гонку знаний» или Dashboard.
+            </div>
+        </div>
+    </section>
+</main>
+
+<div class="toast" id="toast">Баллы сохранены</div>
+
+<script>
+let students = [
+    {name:"Аня", scores:[0,0,0]},
+    {name:"Иван", scores:[0,0,0]},
+    {name:"Сергей", scores:[0,0,0]},
+    {name:"Марина", scores:[0,0,0]}
+];
+
+if(localStorage.getItem("studentScores")){
+    students = JSON.parse(localStorage.getItem("studentScores"));
+}
+
+function render(){
+    const container = document.getElementById("studentsContainer");
+    container.innerHTML = "";
+
+    students.forEach((s,i)=>{
+        const sum = s.scores.reduce((a,b)=>a+b,0);
+
+        const card = document.createElement("div");
+        card.className = "student-card";
+        card.innerHTML = `
+            <div class="student-name">${s.name}</div>
+            <table class="table">
+                <tr>
+                    <td>Задание 1</td>
+                    <td><input type="number" min="0" value="${s.scores[0]}" onchange="updateScore(${i},0,this.value)"></td>
+                </tr>
+                <tr>
+                    <td>Задание 2</td>
+                    <td><input type="number" min="0" value="${s.scores[1]}" onchange="updateScore(${i},1,this.value)"></td>
+                </tr>
+                <tr>
+                    <td>Задание 3</td>
+                    <td><input type="number" min="0" value="${s.scores[2]}" onchange="updateScore(${i},2,this.value)"></td>
+                </tr>
+            </table>
+            <div class="total">Итого: <span>${sum}</span> баллов</div>
+        `;
+        container.appendChild(card);
+    });
+}
+
+function updateScore(studentIndex, taskIndex, value){
+    students[studentIndex].scores[taskIndex] = Number(value);
+    render();
+}
+
+function save(){
+    localStorage.setItem("studentScores", JSON.stringify(students));
+    showToast();
+}
+
+function showToast(){
+    const t = document.getElementById("toast");
+    t.classList.add("show");
+    setTimeout(()=>t.classList.remove("show"),1500);
+}
+
+render();
+</script>
+
+</body>
+</html>

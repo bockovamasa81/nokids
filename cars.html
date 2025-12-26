@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>N.O.K.I.D.S — Гонка знаний</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+    --primary:#7E8CFF;
+    --bg:#F5F5F5;
+    --accent1:#FFDEEF;
+    --accent2:#E0E7FF;
+    --accent3:#AFF696;
+    --text:#222222;
+}
+*{box-sizing:border-box;}
+body{
+    margin:0;
+    background:var(--bg);
+    font-family:'Inter',sans-serif;
+    color:var(--text);
+}
+
+/* HEADER */
+.header{
+    background:var(--primary);
+    color:#fff;
+    padding:14px 40px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    box-shadow:0 4px 10px rgba(0,0,0,0.15);
+}
+.header-left{
+    display:flex;
+    align-items:center;
+    gap:16px;
+}
+.logo{height:40px;}
+.brand-title{font-weight:700;font-size:18px;}
+.brand-subtitle{font-size:12px;opacity:0.9;}
+.nav{display:flex;gap:18px;font-size:14px;}
+.nav a{color:#fff;text-decoration:none;opacity:0.9;}
+.nav a.active{font-weight:600;border-bottom:2px solid #fff;padding-bottom:3px;}
+
+.main{
+    max-width:900px;
+    margin:28px auto 40px auto;
+    padding:0 16px;
+}
+
+/* CARD */
+.card{
+    background:#fff;
+    border-radius:16px;
+    padding:22px 26px;
+    box-shadow:0 12px 26px rgba(0,0,0,0.08);
+}
+.card-title{
+    font-size:18px;
+    font-weight:600;
+    margin-bottom:6px;
+}
+.card-sub{
+    font-size:13px;
+    color:#555;
+    margin-bottom:18px;
+}
+
+/* TRACK */
+.track{
+    margin-bottom:34px;
+}
+.label{
+    margin-bottom:8px;
+    font-weight:600;
+    font-size:16px;
+}
+.road{
+    width:100%;
+    height:95px;
+    background:var(--accent2);
+    border-radius:48px;
+    position:relative;
+    overflow:hidden;
+    box-shadow:
+        inset 0 6px 10px rgba(0,0,0,0.12),
+        0 6px 14px rgba(0,0,0,0.1);
+}
+.lane-line{
+    position:absolute;
+    top:45px;
+    width:100%;
+    height:4px;
+    background:repeating-linear-gradient(
+        to right,
+        white 0px,
+        white 26px,
+        transparent 26px,
+        transparent 50px
+    );
+    opacity:.9;
+}
+.finish-line{
+    position:absolute;
+    right:18px;
+    top:0;
+    width:8px;
+    height:100%;
+    background:repeating-linear-gradient(
+        to bottom,
+        #ffffff 0px,
+        #ffffff 10px,
+        #000000 10px,
+        #000000 20px
+    );
+    opacity:0.6;
+}
+
+/* CAR */
+.car{
+    width:72px;
+    height:40px;
+    border-radius:10px;
+    position:absolute;
+    top:26px;
+    left:0;
+    transition:left .7s ease-in-out;
+    box-shadow:0 5px 9px rgba(0,0,0,.35);
+}
+.pink{background:var(--accent1);}
+.blue{background:var(--primary);}
+.green{background:var(--accent3);}
+.red{background:#FF7F9F;}
+
+.footer{
+    margin-top:10px;
+    font-size:12px;
+    color:#666;
+    text-align:center;
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+    <div class="header-left">
+        <img src="logo.png" class="logo" alt="N.O.K.I.D.S">
+        <div>
+            <div class="brand-title">N.O.K.I.D.S</div>
+            <div class="brand-subtitle">Гонка знаний · визуализация прогресса</div>
+        </div>
+    </div>
+    <nav class="nav">
+        <a href="index.html">Dashboard</a>
+        <a href="cars.html" class="active">Гонка знаний</a>
+        <a href="scores.html">Мои задания</a>
+    </nav>
+</header>
+
+<main class="main">
+    <section class="card">
+        <div class="card-title">Групповая гонка</div>
+        <div class="card-sub">
+            Позиция машины показывает относительный прогресс по баллам.  
+            Важно не сравнение, а собственная траектория роста — каждый движется в своём темпе.
+        </div>
+
+        <div id="tracks"></div>
+    </section>
+
+    <div class="footer">
+        Баллы берутся со страницы «Мои задания» и сохраняются в браузере.
+    </div>
+</main>
+
+<script>
+let raw = localStorage.getItem("studentScores");
+if(!raw){
+    alert("Сначала заполните баллы на странице «Мои задания».");
+}
+let data = raw ? JSON.parse(raw) : [];
+
+let students = [
+    {name:"Аня", color:"pink", score:0},
+    {name:"Иван", color:"blue", score:0},
+    {name:"Сергей", color:"green", score:0},
+    {name:"Марина", color:"red", score:0}
+];
+
+students.forEach(s=>{
+    let found = data.find(d=>d.name===s.name);
+    if(found){
+        s.score = found.scores.reduce((a,b)=>a+b,0);
+    }
+});
+
+function render(){
+    const container = document.getElementById("tracks");
+    container.innerHTML = "";
+
+    const maxScore = Math.max(...students.map(s=>s.score),1);
+
+    students.forEach((student,i)=>{
+        const track = document.createElement("div");
+        track.className = "track";
+        track.innerHTML = `
+            <div class="label">${student.name} — ${student.score} баллов</div>
+            <div class="road">
+                <div class="lane-line"></div>
+                <div class="finish-line"></div>
+                <div class="car ${student.color}" id="car${i}"></div>
+            </div>
+        `;
+        container.appendChild(track);
+
+        const car = track.querySelector(".car");
+        const percent = student.score / maxScore;
+        car.style.left = `calc(${percent*100}% - 70px)`;
+    });
+}
+
+render();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>N.O.K.I.D.S — Dashboard</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+    --primary:#7E8CFF;
+    --bg:#F5F5F5;
+    --accent1:#FFDEEF;
+    --accent2:#E0E7FF;
+    --accent3:#AFF696;
+    --text:#222222;
+}
+*{
+    box-sizing:border-box;
+}
+body{
+    margin:0;
+    background:var(--bg);
+    font-family:'Inter',sans-serif;
+    color:var(--text);
+}
+
+/* HEADER + NAV */
+.header{
+    background:var(--primary);
+    color:#fff;
+    padding:14px 40px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    box-shadow:0 4px 10px rgba(0,0,0,0.15);
+}
+.header-left{
+    display:flex;
+    align-items:center;
+    gap:16px;
+}
+.logo{
+    height:40px;
+}
+.brand-title{
+    font-weight:700;
+    font-size:18px;
+}
+.brand-subtitle{
+    font-size:12px;
+    opacity:0.9;
+}
+.nav{
+    display:flex;
+    gap:18px;
+    font-size:14px;
+}
+.nav a{
+    color:#ffffff;
+    text-decoration:none;
+    opacity:0.9;
+}
+.nav a.active{
+    font-weight:600;
+    border-bottom:2px solid #fff;
+    padding-bottom:3px;
+}
+
+/* LAYOUT */
+.main{
+    max-width:1000px;
+    margin:28px auto;
+    padding:0 16px 40px 16px;
+}
+.grid{
+    display:grid;
+    grid-template-columns:2fr 1.4fr;
+    gap:22px;
+}
+@media(max-width:900px){
+    .grid{
+        grid-template-columns:1fr;
+    }
+}
+
+/* CARDS */
+.card{
+    background:#ffffff;
+    border-radius:16px;
+    padding:20px 22px;
+    box-shadow:0 12px 26px rgba(0,0,0,0.08);
+}
+.card-title{
+    font-size:16px;
+    font-weight:600;
+    margin-bottom:10px;
+}
+
+/* GREETING */
+.greeting{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:16px;
+}
+.greeting-main{
+    font-size:18px;
+    font-weight:600;
+}
+.greeting-sub{
+    font-size:13px;
+    color:#555;
+    margin-top:4px;
+}
+.badge{
+    display:inline-block;
+    padding:4px 10px;
+    border-radius:999px;
+    font-size:11px;
+    background:var(--accent2);
+    color:#444;
+    margin-top:6px;
+}
+.select-student{
+    margin-top:10px;
+}
+.select-student select{
+    padding:6px 10px;
+    border-radius:8px;
+    border:1px solid #d3d7ff;
+    font-size:13px;
+}
+
+/* PROGRESS BAR */
+.progress-wrapper{
+    margin-top:18px;
+}
+.progress-label{
+    font-size:13px;
+    margin-bottom:4px;
+}
+.progress-bar{
+    width:100%;
+    height:12px;
+    border-radius:999px;
+    background:#ECECEC;
+    overflow:hidden;
+}
+.progress-fill{
+    height:100%;
+    border-radius:999px;
+    background:var(--primary);
+    width:0;
+    transition:width .4s ease-out;
+}
+.progress-number{
+    margin-top:6px;
+    font-size:13px;
+    color:#555;
+}
+
+/* STREAK & STATS */
+.stats-row{
+    display:flex;
+    gap:12px;
+    margin-top:18px;
+}
+.stat-pill{
+    flex:1;
+    border-radius:12px;
+    padding:10px 12px;
+    font-size:12px;
+}
+.stat-pill span{
+    display:block;
+}
+.stat-label{
+    opacity:0.7;
+}
+.stat-value{
+    font-weight:600;
+    margin-top:4px;
+}
+.stat-pill.green{
+    background:#E9FFE9;
+}
+.stat-pill.pink{
+    background:var(--accent1);
+}
+.stat-pill.blue{
+    background:var(--accent2);
+}
+
+/* NEXT ACTIONS */
+.list{
+    list-style:none;
+    padding:0;
+    margin:0;
+    font-size:13px;
+}
+.list li{
+    padding:8px 0;
+    border-bottom:1px solid #F0F0F0;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+.list li:last-child{
+    border-bottom:none;
+}
+.tag{
+    padding:3px 8px;
+    border-radius:999px;
+    font-size:11px;
+    background:var(--accent2);
+}
+
+/* MINI LEADERBOARD */
+.leader-item{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:6px 0;
+    font-size:13px;
+}
+.leader-rank{
+    width:18px;
+    font-weight:600;
+}
+.leader-name{
+    flex:1;
+}
+.leader-score{
+    font-weight:600;
+}
+
+/* SMALL LINK */
+.small-link{
+    margin-top:10px;
+    font-size:12px;
+}
+.small-link a{
+    color:var(--primary);
+    text-decoration:none;
+}
+</style>
+</head>
+
+<body>
+
+<header class="header">
+    <div class="header-left">
+        <img src="logo.png" class="logo" alt="N.O.K.I.D.S">
+        <div>
+            <div class="brand-title">N.O.K.I.D.S</div>
+            <div class="brand-subtitle">Дополнительное образование · 14–18</div>
+        </div>
+    </div>
+    <nav class="nav">
+        <a href="index.html" class="active">Dashboard</a>
+        <a href="cars.html">Гонка знаний</a>
+        <a href="scores.html">Мои задания</a>
+    </nav>
+</header>
+
+<main class="main">
+    <div class="grid">
+        <!-- Левая колонка -->
+        <section class="card">
+            <div class="card-title">Обзор прогресса</div>
+            <div class="greeting">
+                <div>
+                    <div class="greeting-main" id="greetingName">Привет!</div>
+                    <div class="greeting-sub">
+                        Твой прогресс зависит от действий, а не от оценки.
+                    </div>
+                    <div class="badge" id="levelBadge">Уровень: Explorer</div>
+
+                    <div class="select-student">
+                        <label style="font-size:12px;">Смотреть прогресс ученика:</label><br>
+                        <select id="studentSelect"></select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="progress-wrapper">
+                <div class="progress-label">Общий прогресс по заданиям</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="progress-number" id="progressText">0 / 0 баллов</div>
+            </div>
+
+            <div class="stats-row">
+                <div class="stat-pill green">
+                    <span class="stat-label">Сделано заданий</span>
+                    <span class="stat-value" id="tasksDone">0 из 0</span>
+                </div>
+                <div class="stat-pill blue">
+                    <span class="stat-label">Текущий ранг</span>
+                    <span class="stat-value" id="rankText">—</span>
+                </div>
+                <div class="stat-pill pink">
+                    <span class="stat-label">Динамика недели</span>
+                    <span class="stat-value" id="deltaText">+0</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Правая колонка -->
+        <section class="card">
+            <div class="card-title">Следующие шаги</div>
+            <ul class="list" id="nextActions">
+                <!-- Заполняется из JS -->
+            </ul>
+
+            <div class="card-title" style="margin-top:18px;">Мини-табло группы</div>
+            <div id="leaderboard"></div>
+
+            <div class="small-link">
+                <a href="cars.html">Открыть полную гонку знаний →</a>
+            </div>
+        </section>
+    </div>
+</main>
+
+<script>
+// Студенты по умолчанию (если ещё нет данных)
+let defaultStudents = [
+    {name:"Аня", scores:[0,0,0]},
+    {name:"Иван", scores:[0,0,0]},
+    {name:"Сергей", scores:[0,0,0]},
+    {name:"Марина", scores:[0,0,0]}
+];
+
+// Загрузка данных
+let stored = localStorage.getItem("studentScores");
+let students = stored ? JSON.parse(stored) : defaultStudents;
+
+// Список учеников для селектора
+const selectEl = document.getElementById("studentSelect");
+students.forEach((s, idx)=>{
+    const opt = document.createElement("option");
+    opt.value = idx;
+    opt.textContent = s.name;
+    selectEl.appendChild(opt);
+});
+
+// Текущий выбранный ученик (можно хранить в localStorage)
+let currentIndex = Number(localStorage.getItem("currentStudentIndex") || 0);
+if(currentIndex < 0 || currentIndex >= students.length) currentIndex = 0;
+selectEl.value = currentIndex;
+
+// Подсчёт суммарных баллов
+function totalScore(student){
+    return student.scores.reduce((a,b)=>a+b,0);
+}
+
+// Максимально возможный балл (условно 100, либо максимум по группе)
+function computeMaxScore(){
+    let max = 0;
+    students.forEach(s=>{
+        max = Math.max(max,totalScore(s));
+    });
+    return max || 100;
+}
+
+// Определение уровня по баллам
+function levelFromScore(score){
+    if(score >= 70) return "Master";
+    if(score >= 40) return "Pro";
+    return "Explorer";
+}
+
+// Рендер Dashboard
+function render(){
+    const student = students[currentIndex];
+    const sum = totalScore(student);
+    const maxScore = computeMaxScore();
+
+    document.getElementById("greetingName").textContent = `Привет, ${student.name}!`;
+    document.getElementById("progressText").textContent = `${sum} / ${maxScore} баллов`;
+
+    const percent = maxScore ? (sum / maxScore)*100 : 0;
+    document.getElementById("progressFill").style.width = `${percent}%`;
+
+    const tasksTotal = student.scores.length;
+    const tasksDone = student.scores.filter(v=>v>0).length;
+    document.getElementById("tasksDone").textContent = `${tasksDone} из ${tasksTotal}`;
+
+    const lvl = levelFromScore(sum);
+    document.getElementById("levelBadge").textContent = `Уровень: ${lvl}`;
+
+    // Лидерборд
+    const leaderboard = document.getElementById("leaderboard");
+    let ranked = students.map(s=>({name:s.name, score:totalScore(s)}));
+    ranked.sort((a,b)=>b.score-a.score);
+    leaderboard.innerHTML = "";
+    ranked.forEach((item, idx)=>{
+        const div = document.createElement("div");
+        div.className = "leader-item";
+        const rank = idx+1;
+        div.innerHTML = `
+            <div class="leader-rank">${rank}</div>
+            <div class="leader-name">${item.name}</div>
+            <div class="leader-score">${item.score}</div>
+        `;
+        leaderboard.appendChild(div);
+    });
+
+    // Ранг текущего ученика
+    const myRank = ranked.findIndex(r=>r.name===student.name)+1;
+    document.getElementById("rankText").textContent = myRank ? `#${myRank} в группе` : "—";
+
+    // Простая заглушка «динамики недели» (можно потом связать с историей)
+    document.getElementById("deltaText").textContent = `+${Math.round(sum/10)}`;
+
+    // Следующие шаги
+    const actions = document.getElementById("nextActions");
+    actions.innerHTML = "";
+    const next = [
+        {text:"Проверь задания, где балл ниже максимума", tag:"фокус"},
+        {text:"Уточни вопросы по последнему модулю", tag:"коммуникация"},
+        {text:"Обнови своё мини-портфолио за неделю", tag:"рост"}
+    ];
+    next.forEach(item=>{
+        const li = document.createElement("li");
+        li.innerHTML = `
+            <span>${item.text}</span>
+            <span class="tag">${item.tag}</span>
+        `;
+        actions.appendChild(li);
+    });
+}
+
+selectEl.addEventListener("change", ()=>{
+    currentIndex = Number(selectEl.value);
+    localStorage.setItem("currentStudentIndex", currentIndex);
+    render();
+});
+
+render();
+</script>
+
+</body>
+</html>

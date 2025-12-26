@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>N.O.K.I.D.S — Личный кабинет</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --primary:#7E8CFF;
+  --bg:#F5F5F5;
+  --accent:#E0E7FF;
+  --text:#222;
+}
+
+body{
+  margin:0;
+  font-family:'Inter',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+
+.header{
+  background:var(--primary);
+  color:#fff;
+  padding:14px 26px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.main{
+  max-width:1200px;
+  margin:26px auto;
+  padding:10px 0;
+  background:#fff;
+  border-radius:16px;
+  box-shadow:0 12px 26px rgba(0,0,0,0.08);
+}
+
+.nav{
+  display:flex;
+  gap:14px;
+  border-bottom:1px solid #e6e6e6;
+  padding:14px 18px;
+}
+
+.nav a{
+  padding:6px 12px;
+  border-radius:999px;
+  text-decoration:none;
+  color:#333;
+  font-size:13px;
+}
+
+.nav a.active{
+  background:var(--accent);
+  font-weight:600;
+}
+
+.section{
+  padding:20px 22px;
+}
+
+.card{
+  background:#F7F7FF;
+  border-radius:12px;
+  padding:14px;
+  margin-bottom:14px;
+}
+
+table{
+  border-collapse:collapse;
+  width:100%;
+}
+th, td{
+  padding:6px;
+}
+
+button{
+  border:none;
+  border-radius:999px;
+  padding:8px 14px;
+  background:var(--primary);
+  color:#fff;
+  cursor:pointer;
+}
+
+.ege-table{
+  border-collapse:collapse;
+  width:100%;
+  border-radius:16px;
+  overflow:hidden;
+  box-shadow:0 12px 24px rgba(0,0,0,0.05);
+  background:#fff;
+}
+
+.ege-table th{
+  background:#E0E7FF;
+  font-weight:600;
+  text-align:center;
+  padding:10px;
+}
+
+.ege-table td{
+  padding:10px;
+  text-align:center;
+  border-bottom:1px solid #eee;
+}
+
+.ege-task{
+  text-align:left;
+  font-weight:500;
+}
+
+.ege-zero{
+  color:#bbb;
+}
+
+.best-variant{
+  background:#AFF69655;
+  font-weight:700;
+}
+
+/* ОБРАТНАЯ СВЯЗЬ */
+.fb-buttons{
+  margin-top:14px;
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+}
+
+.fb-btn{
+  padding:10px 16px;
+  border-radius:10px;
+  border:none;
+  cursor:pointer;
+  font-size:13px;
+}
+
+.fb-yes{
+  background:#7E8CFF;
+  color:#fff;
+}
+
+.fb-no{
+  background:#ddd;
+  color:#777;
+  cursor:not-allowed;
+}
+
+#progressChart{
+  background:white;
+  border-radius:16px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.05);
+  padding:10px;
+  max-width:100%;
+  height:auto;
+}
+
+/* ========== АДАПТИВНОСТЬ ДОПОЛНИТЕЛЬНО ========== */
+
+@media (max-width: 900px){
+
+  .main{
+    margin:10px;
+    border-radius:12px;
+  }
+
+  .header{
+    flex-direction:column;
+    gap:10px;
+    text-align:center;
+  }
+
+  .nav{
+    flex-wrap:wrap;
+    justify-content:center;
+  }
+
+  .nav a{
+    font-size:12px;
+    padding:6px 10px;
+  }
+
+  .section{
+    padding:14px;
+  }
+
+  table{
+    display:block;
+    overflow-x:auto;
+    white-space:nowrap;
+  }
+
+  .fb-buttons{
+    flex-direction:column;
+  }
+
+  .fb-btn{
+    width:100%;
+    text-align:center;
+  }
+}
+
+@media (max-width: 600px){
+
+  body{
+    font-size:14px;
+  }
+
+  .main{
+    margin:6px;
+  }
+
+  h3{
+    font-size:16px;
+  }
+
+  h4{
+    font-size:15px;
+  }
+
+  .nav a{
+    font-size:11px;
+    padding:5px 8px;
+  }
+
+  .fb-btn{
+    font-size:12px;
+    padding:10px;
+  }
+
+  th,td{
+    padding:6px;
+  }
+}
+</style>
+</head>
+
+
+
+<body>
+
+<div class="header">
+  <div id="userName">Личный кабинет</div>
+  <button onclick="logout()">Выйти</button>
+</div>
+
+<div class="main">
+
+  <div class="nav">
+    <a href="#" id="tab1" class="active" onclick="openTab(1)">Мой профиль</a>
+    <a href="#" id="tab2" onclick="openTab(2)">Рейтинг и гонка</a>
+    <a href="#" id="tab3" onclick="openTab(3)">Текущее задание</a>
+    <a href="#" id="tab4" onclick="openTab(4)">Архив заданий</a>
+  </div>
+
+
+  <!-- МОЙ ПРОФИЛЬ -->
+  <div class="section" id="sec1">
+
+    <h3>Твой прогресс</h3>
+
+    <div class="card">
+      <div>Средний балл: <b id="avgScore">0</b></div>
+      <div>Решено вариантов: <b id="variantsSolved">0</b></div>
+    </div>
+
+    <h3>График прогресса по пробникам</h3>
+    <canvas id="progressChart" width="900" height="320"></canvas>
+
+    <div class="fb-buttons" id="fbButtons"></div>
+
+    <h4>Баллы по заданиям ЕГЭ</h4>
+    <table id="egeTable"></table>
+
+  </div>
+
+
+  <!-- РЕЙТИНГ -->
+  <div class="section" id="sec2" style="display:none;">
+    <h3>Общий рейтинг и гонка</h3>
+    <div id="rating"></div>
+    <div style="margin-top:14px;">
+      <a href="cars.html">Перейти к гонке знаний →</a>
+    </div>
+  </div>
+
+
+  <!-- ТЕКУЩЕЕ ЗАДАНИЕ -->
+  <div class="section" id="sec3" style="display:none;">
+    <h3>Текущее задание</h3>
+    <a href="NOKIDS_пробник_1_ЕГЭпрофиль.pdf" download>
+      Скачать файл текущего задания
+    </a>
+  </div>
+
+
+  <!-- АРХИВ -->
+  <div class="section" id="sec4" style="display:none;">
+    <h3>Архив заданий</h3>
+    <div id="archiveList">(список появится позже)</div>
+  </div>
+
+</div>
+
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+
+  let user = localStorage.getItem("loggedStudent");
+  document.getElementById("userName").textContent =
+    user ? "Личный кабинет — "+user : "Личный кабинет — гость";
+
+  let all = JSON.parse(localStorage.getItem("studentScores")||"[]");
+  let me  = all.find(s=>s.name===user) || {scores:[]};
+  if(!Array.isArray(me.scores)) me.scores=[];
+
+  let sums=[0,0,0,0];
+  for(let i=0;i<19;i++){
+    sums[0]+=Number(me.scores[i]||0);
+    sums[1]+=Number(me.scores[19+i]||0);
+    sums[2]+=Number(me.scores[38+i]||0);
+    sums[3]+=Number(me.scores[57+i]||0);
+  }
+
+  let solved=sums.filter(v=>v>0);
+  document.getElementById("variantsSolved").textContent=solved.length;
+
+  let avg=solved.length?solved.reduce((a,b)=>a+b,0)/solved.length:0;
+  document.getElementById("avgScore").textContent=Math.round(avg*10)/10;
+
+  // ----- ОБРАТНАЯ СВЯЗЬ -----
+  let fb=[];
+  try{ fb=JSON.parse(localStorage.getItem("feedbackFiles")||"[]"); }
+  catch(e){ fb=[]; }
+
+  let meFb=fb.find(s=>s.name===user);
+  if(!meFb||!Array.isArray(meFb.files))
+    meFb={name:user,files:["","","",""]};
+
+  let fbBox=document.getElementById("fbButtons");
+  fbBox.innerHTML="";
+
+  ["1","2","3","4"].forEach((label,i)=>{
+    let btn=document.createElement("button");
+    btn.classList.add("fb-btn");
+
+    if(meFb.files[i]){
+      btn.classList.add("fb-yes");
+      btn.textContent="Обратная связь — "+label+" пробник";
+      btn.onclick=()=>downloadPDF(meFb.files[i],`feedback_${label}.pdf`);
+    }else{
+      btn.classList.add("fb-no");
+      btn.textContent="Нет файла — "+label+" пробник";
+      btn.disabled=true;
+    }
+
+    fbBox.appendChild(btn);
+  });
+
+  function downloadPDF(base64,name){
+    let a=document.createElement("a");
+    a.href=base64;
+    a.download=name;
+    a.click();
+  }
+
+  // ----- ТАБЛИЦА -----
+  let table=document.getElementById("egeTable");
+  table.className="ege-table";
+
+  let head=document.createElement("tr");
+  head.innerHTML=`
+    <th>Задание</th>
+    <th>1 пробник</th>
+    <th>2 пробник</th>
+    <th>3 пробник</th>
+    <th>4 пробник</th>`;
+  table.appendChild(head);
+
+  for(let i=1;i<=19;i++){
+    let v=[
+      Number(me.scores[i-1]||0),
+      Number(me.scores[19+i-1]||0),
+      Number(me.scores[38+i-1]||0),
+      Number(me.scores[57+i-1]||0)
+    ];
+
+    function fmt(x){ return x===0?'<span class="ege-zero">0</span>':x; }
+
+    let tr=document.createElement("tr");
+    tr.innerHTML=`
+      <td class="ege-task">Задание ${i}</td>
+      <td>${fmt(v[0])}</td>
+      <td>${fmt(v[1])}</td>
+      <td>${fmt(v[2])}</td>
+      <td>${fmt(v[3])}</td>`;
+    table.appendChild(tr);
+  }
+
+  let tr=document.createElement("tr");
+  tr.innerHTML=`
+    <td><b>Итого</b></td>
+    <td><b>${sums[0]}</b></td>
+    <td><b>${sums[1]}</b></td>
+    <td><b>${sums[2]}</b></td>
+    <td><b>${sums[3]}</b></td>`;
+  table.appendChild(tr);
+
+  let best=Math.max(...sums);
+  sums.forEach((v,i)=>{
+    if(v===best&&v>0) tr.children[i+1].classList.add("best-variant");
+  });
+
+  // ----- ГРАФИК -----
+  let canvas=document.getElementById("progressChart");
+  let ctx=canvas.getContext("2d");
+
+  let W=canvas.width, H=canvas.height;
+  let left=70,right=40,top=40,bottom=60;
+  let chartW=W-left-right, chartH=H-top-bottom;
+
+  let max=Math.max(...sums,10);
+  if(max===0) max=10;
+  let step=Math.ceil(max/5);
+
+  ctx.clearRect(0,0,W,H);
+  ctx.font="14px Inter";
+
+  ctx.strokeStyle="#ddd";
+  ctx.fillStyle="#555";
+
+  for(let y=0;y<=5;y++){
+    let val=step*y;
+    let yy=H-bottom-chartH*(val/max);
+    ctx.beginPath();
+    ctx.moveTo(left,yy);
+    ctx.lineTo(W-right,yy);
+    ctx.stroke();
+    ctx.fillText(val,left-45,yy+5);
+  }
+
+  let labels=["1 пробник","2 пробник","3 пробник","4 пробник"];
+  let pts=[];
+  for(let i=0;i<4;i++){
+    let x=left+(chartW/3)*i;
+    let y=H-bottom-chartH*((sums[i]||0)/max);
+    pts.push({x,y});
+    ctx.fillStyle="#333";
+    ctx.fillText(labels[i],x-45,H-bottom+30);
+  }
+
+  ctx.beginPath();
+  ctx.strokeStyle="#7E8CFF";
+  ctx.lineWidth=3;
+  pts.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));
+  ctx.stroke();
+
+  pts.forEach((p,i)=>{
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,6,0,Math.PI*2);
+    ctx.fillStyle="#7E8CFF";
+    ctx.fill();
+    ctx.fillStyle="#222";
+    ctx.fillText(sums[i]||0,p.x-8,p.y-10);
+  });
+
+}); // DOMContentLoaded
+
+
+/* ТАБЫ */
+function openTab(n){
+  for(let i=1;i<=4;i++){
+    document.getElementById("sec"+i).style.display = i===n?"block":"none";
+    document.getElementById("tab"+i).classList.toggle("active",i===n);
+  }
+}
+
+/* ВЫХОД */
+function logout(){
+  localStorage.removeItem("loggedStudent");
+  window.location="login.html";
+}
+</script>
+
+</body>
+</html>

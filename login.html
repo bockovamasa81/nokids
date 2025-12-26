@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>N.O.K.I.D.S — Вход</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --primary:#7E8CFF;
+  --bg:#F5F5F5;
+  --text:#222;
+}
+body{
+  margin:0;
+  background:var(--bg);
+  font-family:'Inter',sans-serif;
+}
+.container{
+  max-width:420px;
+  margin:80px auto;
+  background:#fff;
+  border-radius:16px;
+  padding:26px;
+  box-shadow:0 12px 28px rgba(0,0,0,0.08);
+}
+h2{
+  margin:0 0 14px 0;
+}
+label{
+  font-size:13px;
+}
+input{
+  width:100%;
+  padding:9px 10px;
+  border-radius:8px;
+  border:1px solid #ccc;
+  margin-top:4px;
+  margin-bottom:14px;
+}
+button{
+  width:100%;
+  padding:10px 12px;
+  border:none;
+  border-radius:999px;
+  background:var(--primary);
+  color:#fff;
+  font-size:14px;
+  cursor:pointer;
+}
+.error{
+  color:#c0392b;
+  font-size:12px;
+  height:16px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h2>N.O.K.I.D.S — вход</h2>
+
+  <label>Имя ученика</label>
+  <input id="user">
+
+  <label>Пароль</label>
+  <input id="pass" type="password">
+
+  <div class="error" id="error"></div>
+
+  <button onclick="login()">Войти</button>
+</div>
+
+<script>
+// если ещё нет — создадим данные
+if(!localStorage.getItem("studentUsers")){
+  localStorage.setItem("studentUsers", JSON.stringify([
+    {name:"Аня", password:"anya123"},
+    {name:"Иван", password:"ivan123"},
+    {name:"Сергей", password:"sergey123"},
+    {name:"Марина", password:"marina123"}
+  ]));
+}
+
+function login(){
+  let users = JSON.parse(localStorage.getItem("studentUsers"));
+
+  let u = document.getElementById("user").value.trim();
+  let p = document.getElementById("pass").value.trim();
+
+  let found = users.find(s=>s.name===u && s.password===p);
+
+  if(!found){
+    document.getElementById("error").textContent = "Неверный логин или пароль";
+    return;
+  }
+
+  // сохраняем текущего ученика
+  localStorage.setItem("loggedStudent", u);
+
+  // переход
+  window.location = "student.html";
+}
+</script>
+
+</body>
+</html>
